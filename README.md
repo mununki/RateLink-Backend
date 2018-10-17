@@ -1,4 +1,4 @@
-# RateManager
+# RateLink
 
 ## Features
 
@@ -21,6 +21,7 @@
 - Backend : Django + Rest API + Web crawling
 - Frontend : React
 - GraphQL (Serverside: Graphene, Clientside: Apollo)
+- AWS Elasticbeanstalk + Lambda
 
 ## Demo
 
