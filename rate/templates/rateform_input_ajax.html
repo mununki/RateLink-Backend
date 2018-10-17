@@ -1,0 +1,170 @@
+{% load humanize %}
+
+{% if is_mobile %}
+  <div class="d-flex flex-column" id="new_input_narrow">
+    <div class="p w-100">
+    <!-- 맨 윗 줄 -->
+        <div class="d-flex justify-content-between" style="background-color:#ececec">
+            <div class="p" style="background-color:#ececec">
+              <!-- 입력자 -->
+              {% if request.user.profile.profile_name %}
+              {{ request.user.profile.profile_name }}
+              {% else %}
+              {{ request.user.nickname }}
+              {% endif %}
+            </div>
+
+            <div class="p" style="background-color:#ececec">
+              &nbsp;
+            </div>
+        </div>
+        <!-- main Card -->
+        <div class="card">
+            <div class="card-body" id="card-body-small">
+              <div class="table-responsive-sm">
+                <table class="table table-sm table-borderless" style="margin-bottom:0">
+                  <tr>
+                    <td scope="row">
+                      <select id="liner_ajax" class="custom-select" name="liner" multiple="multiple" tabindex="2">
+                        {% if ln %}<option selected>{{ ln }}</option>{% endif %}
+                      </select>
+                    </td>
+                    <td class="text-left" colspan="3">
+                      <input type="text" class="form-control" name="account" value="{{ ac }}" maxlength="20" required id="account_ajax" aria-describedby="inputGroup-sizing-default" tabindex="1" autofocus>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td scope="row" rowspan="3" style="width:50%">
+                      <select id="pol_ajax" class="custom-select" name="pol" multiple="multiple" tabindex="3">
+                        {% if pl %}<option selected>{{ pl }}</option>{% endif %}
+                      </select><br />
+                      <span style="color:lightgrey;">to</span><br />
+                      <select id="pod_ajax" class="custom-select" name="pod" multiple="multiple" tabindex="4">
+                        {% if pd %}<option selected>{{ pd }}</option>{% endif %}
+                      </select>
+                    </td>
+                    <td scope="row" style="width:5%;"><span class="badge badge-pill badge-secondary">20'</span></td>
+                    <td scope="row" style="width:15%;">
+                      <input type="number" class="form-control" name="buying20" value="{% if br20 is None %}0{% else %}{{ br20 }}{% endif %}" id="buying20_ajax" style="width:50px;padding:5px 1px 5px 1px;" tabindex="5">
+                    </td>
+                    <td scope="row" style="width:15%;">
+                      <input type="number" class="form-control" name="selling20" value="{% if sl20 is None %}0{% else %}{{ sl20 }}{% endif %}" id="selling20_ajax" style="width:50px;padding:5px 1px 5px 1px;" tabindex="8">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td scope="row"><span class="badge badge-pill badge-secondary">40'</span></td>
+                    <td scope="row">
+                      <input type="number" class="form-control" name="buying40" value="{% if br40 is None %}0{% else %}{{ br40 }}{% endif %}" id="buying40_ajax" style="width:50px;padding:5px 1px 5px 1px;" tabindex="6">
+                    </td>
+                    <td scope="row">
+                      <input type="number" class="form-control" name="selling40" value="{% if sl40 is None %}0{% else %}{{ sl40 }}{% endif %}" id="selling40_ajax" style="width:50px;padding:5px 1px 5px 1px;" tabindex="9">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td scope="row"><span class="badge badge-pill badge-secondary">4H</span></td>
+                    <td scope="row">
+                      <input type="number" class="form-control" name="buying4H" value="{% if br4H is None %}0{% else %}{{ br4H }}{% endif %}" id="buying4H_ajax" style="width:50px;padding:5px 1px 5px 1px;" tabindex="7">
+                    </td>
+                    <td scope="row">
+                      <input type="number" class="form-control" name="selling4H" value="{% if sl4H is None %}0{% else %}{{ sl4H }}{% endif %}" id="selling4H_ajax" style="width:50px;padding:5px 1px 5px 1px;" tabindex="10">
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <!-- Collapse 영역 -->
+                <div class="card" id="collapse-card" style="padding:0;background-color:#FFF1B5">
+                  <div class="card-body" id="collapse-card-body">
+                    <div class="d-flex justify-content-between">
+                      <div class="p text-center" style="padding:0;">
+                        <div class="text-muted"><small>L.F/T</small></div>
+                        <div><input type="number" class="form-control" name="loadingFT" value="{% if lft is None %}0{% else %}{{ lft }}{% endif %}" id="loadingFT_ajax" style="width:40px;padding:5px 1px 5px 1px;" tabindex="11"></div>
+                        <div class="text-muted"><small>D.F/T</small></div>
+                        <div><input type="number" class="form-control" name="dischargingFT" value="{% if dft is None %}0{% else %}{{ dft }}{% endif %}" id="dischargingFT_ajax" style="width:40px;padding:5px 1px 5px 1px;" tabindex="12"></div>
+                      </div>
+                      <div class="p text-center" style="padding:0;">
+                        <span class="text-muted"><small>유효일</small></span><br />
+                        <input type="date" class="form-control" name="effectiveDate" id="ed_ajax" value="{{ ed|date:'Y-m-d' }}" style="margin:0;padding:5px 1px 5px 1px;" tabindex="13">
+                        <span class="text-muted"><small>견적일</small></span><br />
+                        <input type="date" class="form-control" name="offeredDate" id="od_ajax" value="{{ od|date:'Y-m-d' }}" style="margin:0;padding:5px 1px 5px 1px;" tabindex="14">
+                      </div>
+                      <div class="p text-center" style="padding:0;">
+                        <div class="text-muted"><small>Remarks</small></div>
+                        <div><textarea name="remark" class="form-control" maxlength="50" id="remark_ajax" rows="4" style="margin:0;padding:5px 1px 5px 1px;" tabindex="15">{{ rmk }}</textarea></div>
+                      </div>
+                    </div>
+                    <div>
+                      <span class="btn btn-danger btn-sm" id="btn_rate_input">입력</span>
+                      <span class="btn btn-secondary btn-sm" id="btn_rate_cancel">취소</span>
+                    </div>
+                  </div>
+                </div>
+            </div> <!-- card-body -->
+        </div>
+    </div>
+  </div>
+{% endif %}
+
+{% if not is_mobile %}
+  <tr id="new_input">
+    <td scope="row" style="width:100px;">
+      {% if request.user.profile.profile_name %}
+      {{ request.user.profile.profile_name }}
+      {% else %}
+      {{ request.user.nickname }}
+      {% endif %}
+    </td>
+    <td style="width:100px;">
+      <input type="text" class="form-control" name="account" value="{{ ac }}" maxlength="20" required id="account_ajax" style="width:80px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:90px;padding:0 5px 0 5px;">
+      <select id="liner_ajax" class="custom-select" name="liner" multiple="multiple" style="width:85px;">
+        {% if ln %}<option selected>{{ ln }}</option>{% endif %}
+      </select>
+    </td>
+    <td style="width:200px;padding:0 5px 0 5px;text-align:left;" colspan="2">
+      <span class="badge badge-pill badge-warning">POL</span>
+      <select id="pol_ajax" class="custom-select" name="pol" multiple="multiple" style="width:180px;">
+        {% if pl %}<option selected>{{ pl }}</option>{% endif %}
+      </select><br />
+      <span class="badge badge-pill badge-warning">POD</span>
+      <select id="pod_ajax" class="custom-select" name="pod" multiple="multiple" style="width:180px;">
+        {% if pd %}<option selected>{{ pd }}</option>{% endif %}
+      </select>
+    </td>
+    <td style="width:60px;padding:0 5px 0 5px;" class="border-left">
+      <input type="number" class="form-control" name="buying20" value="{% if br20 is None %}0{% else %}{{ br20 }}{% endif %}" id="buying20_ajax" style="width:50px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:60px;padding:0 5px 0 5px;">
+      <input type="number" class="form-control" name="buying40" value="{% if br40 is None %}0{% else %}{{ br40 }}{% endif %}" id="buying40_ajax" style="width:50px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:60px;padding:0 5px 0 5px;">
+      <input type="number" class="form-control" name="buying4H" value="{% if br4H is None %}0{% else %}{{ br4H }}{% endif %}" id="buying4H_ajax" style="width:50px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:60px;padding:0 5px 0 5px;" class="border-left">
+      <input type="number" class="form-control" name="selling20" value="{% if sl20 is None %}0{% else %}{{ sl20 }}{% endif %}" id="selling20_ajax" style="width:50px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:60px;padding:0 5px 0 5px;">
+      <input type="number" class="form-control" name="selling40" value="{% if sl40 is None %}0{% else %}{{ sl40 }}{% endif %}" id="selling40_ajax" style="width:50px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:60px;padding:0 5px 0 5px;" class="border-right">
+      <input type="number" class="form-control" name="selling4H" value="{% if sl4H is None %}0{% else %}{{ sl4H }}{% endif %}" id="selling4H_ajax" style="width:50px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:50px;padding:0 5px 0 5px;">
+      <input type="number" class="form-control" name="loadingFT" value="{% if lft is None %}0{% else %}{{ lft }}{% endif %}" id="loadingFT_ajax" style="width:40px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:50px;padding:0 5px 0 5px;">
+      <input type="number" class="form-control" name="dischargingFT" value="{% if dft is None %}0{% else %}{{ dft }}{% endif %}" id="dischargingFT_ajax" style="width:40px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:140px;padding:0 5px 0 5px;text-align:left;" colspan="2">
+      <span class="badge badge-pill badge-warning">유효일</span>
+      <input type="date" class="form-control" name="effectiveDate" id="ed_ajax" value="{{ ed|date:'Y-m-d' }}" style="width:130px;padding:5px 1px 5px 1px;">
+      <span class="badge badge-pill badge-warning">견적일</span>
+      <input type="date" class="form-control" name="offeredDate" id="od_ajax" value="{{ od|date:'Y-m-d' }}" style="width:130px;padding:5px 1px 5px 1px;">
+    </td>
+    <td style="width:140px;">
+      <textarea name="remark" class="form-control" maxlength="50" id="remark_ajax" rows="2" style="width:100%;padding:5px 1px 5px 1px;margin-bottom:5px;">{{ rmk }}</textarea>
+      <span class="btn btn-danger btn-sm" id="btn_rate_input">입력</span>
+      <span class="btn btn-secondary btn-sm" id="btn_rate_cancel">취소</span>
+    </td>
+  </tr>
+{% endif %}
