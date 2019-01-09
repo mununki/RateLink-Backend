@@ -1,8 +1,0 @@
-{% autoescape off %}
-안녕하세요 {{ new_user.nickname }} 님, RateLink에 가입해주셔서 감사합니다.
-회원가입을 완료하시려면, 아래 링크를 클릭해주세요.
-
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
-
-만약, 클릭해도 열리지 않는다면 링크 주소를 복사하여, 인터넷 브라우저 주소창에 붙여넣기 해주세요.
-{% endautoescape %}
