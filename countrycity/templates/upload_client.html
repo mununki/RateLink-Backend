@@ -1,0 +1,16 @@
+<html>
+
+<body>
+
+  <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+    <span>Client 업로드</span><br />
+    <input type="file" name="client" id="id_client">
+    <p>&nbsp;</p>
+    <button class="btn btn-primary" type="submit">UPLOAD</button>
+
+  </form>
+
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+<html>
+    <body>
+        <table>
+            <tr>
+                <td>
+                    pk
+                </td>
+                <td>
+                    inputperson
+                </td>
+                <td>
+                    account
+                </td>
+                <td>
+                    liner
+                </td>
+                <td>
+                    pol
+                </td>
+                <td>
+                    pod
+                </td>
+                <td>
+                    buying20
+                </td>
+                <td>
+                    selling20
+                </td>
+                <td>
+                    buying40
+                </td>
+                <td>
+                    selling40
+                </td>
+                <td>
+                    buying4H
+                </td>
+                <td>
+                    selling4H
+                </td>
+                <td>
+                    loadingFT
+                </td>
+                <td>
+                    dischargingFT
+                </td>
+                <td>
+                    effectiveDate
+                </td>
+                <td>
+                    offeredDate
+                </td>
+                <td>
+                    recordedDate
+                </td>
+                <td>
+                    remark
+                </td>
+                <td>
+                    deleted
+                </td>
+            </tr>
+            {% for rate in rates %}
+            <tr>
+                <td>
+                    {{ rate.pk }}
+                </td>
+                <td>
+                    {{ rate.inputperson }}
+                </td>
+                <td>
+                    {{ rate.account }}
+                </td>
+                <td>
+                    {{ rate.liner }}
+                </td>
+                <td>
+                    {{ rate.pol }}
+                </td>
+                <td>
+                    {{ rate.pod }}
+                </td>
+                <td>
+                    {{ rate.buying20 }}
+                </td>
+                <td>
+                    {{ rate.selling20 }}
+                </td>
+                <td>
+                    {{ rate.buying40 }}
+                </td>
+                <td>
+                    {{ rate.selling40 }}
+                </td>
+                <td>
+                    {{ rate.buying4H }}
+                </td>
+                <td>
+                    {{ rate.selling4H }}
+                </td>
+                <td>
+                    {{ rate.loadingFT }}
+                </td>
+                <td>
+                    {{ rate.dischargingFT }}
+                </td>
+                <td>
+                    {{ rate.effectiveDate }}
+                </td>
+                <td>
+                    {{ rate.offeredDate }}
+                </td>
+                <td>
+                    {{ rate.recordedDate }}
+                </td>
+                <td>
+                    {{ rate.remark }}
+                </td>
+                <td>
+                    {{ rate.deleted }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

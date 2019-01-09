@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125821609-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-125821609-1');
+  </script>
+
+  <title>{% block title %}{% endblock title %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="keywords" content="해상운임, 운임관리, 운임검색, 운임공유">
+  <meta name="description" content="해상운임을 쉽게 저장하고 안전하게 관리 및 공유할 수 있는 플랫폼">
+  <meta name="author" content="RateLink">
+  {% load static %}
+  <link href="{% static 'rate/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt"
+    crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed:400|Nanum+Gothic:500" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" type="image/png" href="{% static 'rate/img/favicon.png' %}" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'IBM Plex Sans Condensed', 'Nanum Gothic', sans-serif;
+      background-color: #ececec;
+    }
+
+    div.card-search {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      text-align: center;
+    }
+
+    /* 작은 화면 card-body */
+    #card-body-small {
+      padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+    }
+
+    #collapse-card {
+      box-shadow: none;
+      padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+    }
+
+    #collapse-card-body {
+      padding: 0.1rem 0.5rem 0.3rem 0.5rem;
+    }
+
+    #main-card-body {
+      padding: 0.5rem 1rem 0.5rem 1rem;
+    }
+
+    .table>thead>tr>th,
+    .table>tbody>tr>td {
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .card-header {
+      padding: 0.5rem 1rem 0.5rem 1rem;
+    }
+
+    #inputperson-card-header {
+      font-size: 0.9rem;
+    }
+
+    .modal-footer {
+      padding: 0.5rem 1rem 0.5rem 1rem;
+    }
+
+    .alert {
+      position: fixed;
+      top: 50px;
+      right: 0px;
+      width: 100%;
+      z-index: 900;
+      opacity: 0.9;
+    }
+
+    .profile_list {
+      display: inline-block;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: 1px solid darkgrey;
+      padding: 3px;
+
+      background-color: #ECECEC;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+    }
+
+    @media (max-width: 575.98px) {
+
+      body,
+      .btn,
+      .form-control,
+      table,
+      .input-group-text {
+        font-size: 0.8rem;
+      }
+    }
+
+    @media (min-width: 576px) {
+
+      body,
+      .btn,
+      .form-control,
+      table,
+      .input-group-text {
+        font-size: 0.9rem;
+      }
+    }
+
+    .table-borderless>tbody>tr>td,
+    .table-borderless>tbody>tr>th,
+    .table-borderless>tfoot>tr>td,
+    .table-borderless>tfoot>tr>th,
+    .table-borderless>thead>tr>td,
+    .table-borderless>thead>tr>th {
+      border: none;
+    }
+
+    input[type='number'] {
+      -moz-appearance: textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      /* display: none; <- Crashes Chrome on hover */
+      -webkit-appearance: none;
+      margin: 0;
+      /* <-- Apparently some margin are still there even though it's hidden */
+    }
+
+    #notification {
+      position: fixed;
+      top: 55px;
+      right: 10px;
+      width: 250px;
+      z-index: 105;
+      text-align: left;
+      font-weight: normal;
+      font-size: 1rem;
+      font-weight: bold;
+      color: black;
+      background-color: #ffffff;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid grey;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    }
+
+    #notification span.dismiss {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0 5px;
+      cursor: pointer;
+      float: right;
+    }
+
+    #notification a {
+      color: black;
+      text-decoration: none;
+      font-weight: bold
+    }
+
+    #notification_ajax {
+      position: fixed;
+      top: 55px;
+      right: 10px;
+      width: 250px;
+      z-index: 105;
+      text-align: left;
+      font-weight: normal;
+      font-size: 1rem;
+      font-weight: bold;
+      color: black;
+      background-color: #ffffff;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid grey;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    }
+
+    #notification_ajax span.dismiss {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0 5px;
+      cursor: pointer;
+      float: right;
+    }
+
+    #notification_ajax a {
+      color: black;
+      text-decoration: none;
+      font-weight: bold
+    }
+  </style>
+  {% block css %}
+  {% endblock css %}
+
+</head>
+
+<body>
+
+  <script>
+    var USER_ID = "{{ loginuser.id }}"
+    var USER_PROFILE_NAME = "{{ profile.profile_name }}"
+  </script>
+
+  <div id="header"></div>
+
+  {% for message in messages %}
+  <div id="notification" style="display:none;">
+    <span>RateLink<span><span class="dismiss"><a>X</a></span><br />
+        <div>
+          {{ message }}
+        </div>
+  </div>
+  {% endfor %}
+  <div id="notification_ajax" style="display:none;">
+  </div>
+
+  {% block content %}
+
+  {% endblock content %}
+
+  <!--JS-->
+  {% load static %}
+
+  <script src="{% static 'rate/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'rate/js/header/main.472a0a6f.js' %}"></script>
+  <script>
+    {% if messages %}
+    $('#notification').fadeIn('slow');
+    {% endif %}
+    $('body').on('click', '.dismiss', function () {
+      $('[id^=notification]').fadeOut('slow');
+    });
+  </script>
+
+  {% block javascript %}
+  {% endblock javascript %}
+
+</body>
+
+</html>

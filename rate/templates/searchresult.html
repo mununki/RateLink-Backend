@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}운임 검색-RateLink{% endblock title %}
+
+{% block css %}
+<link href="{% static 'rate/css/ratesearch/1.8b6a8335.chunk.css' %}" rel="stylesheet" type="text/css">
+{% endblock css %}
+
+{% block content %}
+
+<div id="search_react"></div>
+
+{% endblock content %}
+
+{% block javascript %}
+{% load static %}
+<script src="{% static 'rate/js/ratesearch/1.b9aa6f3a.chunk.js' %}"></script>
+<script src="{% static 'rate/js/ratesearch/main.87ab81a9.chunk.js' %}"></script>
+<script src="{% static 'rate/js/ratesearch/runtime~main.4a686d48.js' %}"></script>
+{% endblock javascript %}

@@ -1,0 +1,526 @@
+{% extends "layout.html" %}
+{% load static %}
+  {% load humanize %}
+
+  {% block title %}친구 관리-RateLink{% endblock title %}
+
+  {% block css %}
+    <style>
+      div.card {
+        box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0), 0 0 0 0 rgba(0, 0, 0, 0);
+        text-align: left;
+      }
+      .card.left {
+        width: 15rem;
+      }
+      .card.main {
+        width: 30rem;
+      }
+      .card.right {
+        width: 15rem;
+      }
+      .profile_update {
+        display: inline-block;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        border: 1px solid darkgrey;
+        padding: 3px;
+
+        background-color: #ECECEC;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+      }
+      .profile_friend {
+        display: inline-block;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: 1px solid darkgrey;
+        padding: 2px;
+
+        background-color: #ECECEC;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+      }
+      #badgeonmouse:hover {
+        cursor: pointer;
+      }
+    </style>
+  {% endblock css %}
+
+  {% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">{% if request.user.profile.profile_name %}{{ request.user.profile.profile_name }}{% else %}{{ request.user.nickname }}{% endif %}님</li>
+      <li class="breadcrumb-item active" aria-current="page">친구 관리</li>
+    </ol>
+  </nav>
+  <!-- 작은 화면용 -->
+  <div class="d-block d-sm-block d-md-none">
+    <div class="container-fluid">
+      <div class="d-flex flex-column">
+
+          <!-- 프로필 카드 -->
+          <div class="p-2">
+            <div class="card">
+              <div class="card-body">
+
+                <div class="d-flex justify-content-between align-items-end">
+
+                  <div class="p-2 text-center">
+                    <div class="profile-header-container text-center">
+                      {% if request.user.profile.image %}<img class="profile_update" src="{{ request.user.profile.image.url }}">{% endif %}
+                    </div>
+                    <hr />
+                    <div class="card-text text-center">{{ request.user.nickname }}</div>
+                    <div class="card-text text-center text-weight-light text-muted"><small>{{ request.user.email }}</small></div>
+                  </div>
+
+                  <div class="p-2 text-center">
+                    <div class="d-flex align-items-start flex-column" style="height:120px;">
+
+                      <div class="mb-auto p">
+                        <div class="text-muted font-weight-light">Tellers</div>
+                        <div># {{ showers.count }}</div>
+                      </div>
+
+                      <div class="p">
+                        <div class="text-muted font-weight-light">Readers</div>
+                        <div># {{ readers.count }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div> <!-- 프로필 카드 -->
+          <!-- 중간 영역 -->
+          <div class="p-2">
+            <div class="card">
+              <div class="card-header text-center" style="background-color:#003e5e;">
+                <span class="text-light"><h5>친구 관리</h5></span>
+              </div>
+              <div class="card-body">
+
+                    <form method="POST">{%csrf_token%}
+
+                      <div class="form-row">
+                        <div class="form-group col-6">
+                          <input class="form-control" type="text" name="friendname" placeholder="이름">
+                        </div>
+                        <div class="form-group col-6">
+                          <input class="form-control" type="text" name="friendemail" placeholder="Email">
+                        </div>
+                      </div>
+                        <div class="form-group">
+                          <input class="form-control" type="text" name="friendcompany" placeholder="회사 이름">
+                        </div>
+
+                        <button class="btn text-light" type="submit" style="background-color:#6dbad8;">찾기</button>
+                    </form>
+
+                </div>
+            </div> <!-- card -->
+              <span>&nbsp;</span>
+              <div class="card">
+                <div class="card-header">
+                  <span>찾은 결과</span>
+                </div>
+                <div class="card-body">
+
+                  {% for friend in friends %}
+
+                  <div class="d-flex justify-content-start align-items-center">
+                    <div class="p">
+                      {% if friend.profile.image %}<img src="{{ friend.profile.image.url }}" class="profile_friend">{% else %}<img src="{% static 'account/profileimages/blank.png' %}" class="profile_friend">{% endif %}
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="p text-left">
+                      <div class="card-text">{{ friend.nickname }} <a data-href="/account/friend/add/{{ friend.pk }}" data-toggle="modal" data-target="#confirm-add"><span class="badge badge-warning" id="badgeonmouse">add+</span></a></div>
+                      <div class="card-text font-weight-light text-muted"><small>{{ friend.email }}</small></div>
+                    </div>
+                  </div>
+                  <span>&nbsp;</span>
+
+                  <!-- Add Modal -->
+                  <div class="modal fade" id="confirm-add" tabindex="-1" role="dialog" aria-labelledby="addModal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header text-left bg-dark text-light">
+                            RateLink
+                          </div>
+                          <div class="modal-body text-dark">
+                            <span>
+                              정말 추가하시겠습니까?<br />
+                              상대방이 {% if request.user.profile.profile_name %}{{ request.user.profile.profile_name }}{% else %}{{ request.user.nickname }}{% endif %}님이 입력한 운임을 모두 볼 수 있게 됩니다.
+                            </span>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                            <a class="btn btn-primary btn-ok">추가</a>
+                            </div>
+                        </div>
+                    </div>
+                  </div> <!-- Modal end -->
+                  {% endfor %}
+
+                </div>
+              </div>
+
+          </div>  <!-- col-6 -->
+          <!-- 우측 -->
+          <!-- 친구 관리 -->
+          <div class="p-2">
+              <div class="card">
+                <div class="card">
+                  <div class="card-body" style="background-color:#FFF1B5">
+                    <div class="card-text font-weight-light"><u>Teller</u><br /><small>나에게 운임을 보여주는 사람</small></div>
+                    <hr />
+                    <div class="card-text font-weight-light"><u>Reader</u><br /><small>내가 운임을 보여주는 사람</small></div>
+                  </div>
+                </div>
+              </div>
+              <span>&nbsp;</span>
+                <div class="card">
+                  <div class="card-header">
+                    <span>Tellers</span>
+                  </div>
+                  <div class="card-body">
+
+                    {% for shower in showers %}
+                    <div class="d-flex justify-content-start align-items-center">
+                      <div class="p">
+                        {% if shower.shower.profile.image %}<img src="{{ shower.shower.profile.image.url }}" class="profile_friend">{% else %}<img src="{% static 'account/profileimages/blank.png' %}" class="profile_friend">{% endif %}
+                      </div>
+                      &nbsp;&nbsp;&nbsp;
+                      <div class="p text-left">
+                        <div class="card-text">{{ shower.shower.nickname }}&nbsp;
+                          {% if shower.shower.email in readers_list %}{% else %}<a data-href="/account/friend/add/{{ shower.shower.pk }}" data-toggle="modal" data-target="#confirm-add-teller"><span class="badge badge-warning" id="badgeonmouse">add+</span></a>{% endif %}
+                        </div>
+                        <div class="card-text font-weight-light text-muted"><small>{{ shower.shower.email }}</small></div>
+                      </div>
+                    </div>
+                    <span>&nbsp;</span>
+
+                    <!-- Add Modal -->
+                    <div class="modal fade" id="confirm-add-teller" tabindex="-1" role="dialog" aria-labelledby="addModal" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header text-left bg-dark text-light">
+                              RateLink
+                            </div>
+                            <div class="modal-body text-dark">
+                              <span>
+                                정말 추가하시겠습니까?<br />
+                                상대방이 {% if request.user.profile.profile_name %}{{ request.user.profile.profile_name }}{% else %}{{ request.user.nickname }}{% endif %}님이 입력한 운임을 모두 볼 수 있게 됩니다.
+                              </span>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                              <a class="btn btn-primary btn-ok">추가</a>
+                              </div>
+                          </div>
+                      </div>
+                    </div> <!-- Modal end -->
+                    {% endfor %}
+
+                  </div>
+                </div>
+                <span>&nbsp;</span>
+                <div class="card">
+                  <div class="card-body" style="background-color:#FFF1B5">
+                    <div class="card-text font-weight-light"><small>친구 삭제는 <span class="badge badge-danger">del</span>를 클릭하세요.</small></div>
+                  </div>
+                </div>
+                <span>&nbsp;</span>
+                <div class="card">
+                  <div class="card-header">
+                    <span>Readers</span>
+                  </div>
+                  <div class="card-body">
+
+                    {% for reader in readers %}
+                    <div class="d-flex justify-content-start align-items-center">
+                      <div class="p">
+                        {% if reader.reader.profile.image %}<img src="{{ reader.reader.profile.image.url }}" class="profile_friend">{% else %}<img src="{% static 'account/profileimages/blank.png' %}" class="profile_friend">{% endif %}
+                      </div>
+                      &nbsp;&nbsp;&nbsp;
+                      <div class="p text-left">
+                        <div class="card-text">{{ reader.reader.nickname }}&nbsp;<a data-href="delete/{{reader.pk}}" id="delete-small" data-toggle="modal" data-target="#confirm-delete"><span class="badge badge-danger" id="badgeonmouse">del</span></a></div>
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="deleteModal" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header text-left bg-dark text-light">
+                                  RateLink
+                                </div>
+                                <div class="modal-body text-dark">
+                                  <span>정말 삭제하시겠습니까?</span>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                                  <a class="btn btn-primary btn-ok">삭제</a>
+                                  </div>
+                              </div>
+                          </div>
+                        </div> <!-- Modal end -->
+
+                        <div class="card-text font-weight-light text-muted"><small>{{ reader.reader.email }}</small></div>
+                      </div>
+                    </div>
+                    <span>&nbsp;</span>
+                    {% endfor %}
+
+                  </div>
+                </div>
+              </div>
+
+      </div> <!-- d-flex justify-content-center -->
+    </div> <!-- container-fluid -->
+  </div>
+
+  <!-- 큰 화면용 -->
+  <div class="d-none d-sm-none d-md-block">
+    <div class="container-fluid" style="margin-top:50px;">
+      <div class="d-flex flex-row justify-content-center">
+
+        <!-- 좌측 영역 -->
+        <div class="p-2">
+          <div class="card left">
+            <div class="card-body">
+              <div class="profile-header-container text-center">
+                {% if profile.image %}<img class="profile_update" src="{{ profile.image.url }}">{% endif %}
+              </div>
+              <hr />
+              <div class="card-text text-center">{{ request.user.nickname }}</div>
+              <div class="card-text text-center text-weight-light text-muted"><small>{{ request.user.email }}</small></div>
+              <p>&nbsp;</p>
+              <div class="d-flex justify-content-center">
+                <div class="d-flex flex-row">
+                  <div class="p-2 text-center border-right">
+                    <div class="text-muted font-weight-light">Tellers</div>
+                    <div># {{ showers.count }}</div>
+                  </div>
+                  <div class="p-2 text-center">
+                    <div class="text-muted font-weight-light">Readers</div>
+                    <div># {{ readers.count }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 중간 영역 -->
+        <div class="p-2">
+          <div class="card main">
+            <div class="card-header text-center" style="background-color:#003e5e;">
+              <span class="text-light"><h5>친구 관리</h5></span>
+            </div>
+            <div class="card-body">
+
+                  <form method="POST">{%csrf_token%}
+
+                    <div class="form-row">
+                      <div class="form-group col-6">
+                        <input class="form-control" type="text" name="friendname" placeholder="이름">
+                      </div>
+                      <div class="form-group col-6">
+                        <input class="form-control" type="text" name="friendemail" placeholder="Email">
+                      </div>
+                    </div>
+                      <div class="form-group">
+                        <input class="form-control" type="text" name="friendcompany" placeholder="회사 이름">
+                      </div>
+
+                      <button class="btn text-light" type="submit" style="background-color:#6dbad8;">찾기</button>
+                  </form>
+
+              </div>
+          </div> <!-- card -->
+            <span>&nbsp;</span>
+            <div class="card">
+              <div class="card-header">
+                <span>찾은 결과</span>
+              </div>
+              <div class="card-body">
+                  {% for friend in friends %}
+
+                  <div class="d-flex justify-content-start align-items-center">
+                    <div class="p">
+                      {% if friend.profile.image %}<img src="{{ friend.profile.image.url }}" class="profile_friend">{% else %}<img src="{% static 'account/profileimages/blank.png' %}" class="profile_friend">{% endif %}
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="p text-left">
+                      <div class="card-text">{{ friend.nickname }} <a data-href="/account/friend/add/{{ friend.pk }}" data-toggle="modal" data-target="#confirm-addxg"><span class="badge badge-warning" id="badgeonmouse">add+</span></a></div>
+                      <div class="card-text font-weight-light text-muted"><small>{{ friend.email }}</small></div>
+                    </div>
+                  </div>
+                  <span>&nbsp;</span>
+
+                  <!-- Add Modal -->
+                  <div class="modal fade" id="confirm-addxg" tabindex="-1" role="dialog" aria-labelledby="addModal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header text-left bg-dark text-light">
+                            RateLink
+                          </div>
+                          <div class="modal-body text-dark">
+                            <span>
+                              정말 추가하시겠습니까?<br />
+                              상대방이 {% if request.user.profile.profile_name %}{{ request.user.profile.profile_name }}{% else %}{{ request.user.nickname }}{% endif %}님이 입력한 운임을 모두 볼 수 있게 됩니다.
+                            </span>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                            <a class="btn btn-primary btn-ok">추가</a>
+                            </div>
+                        </div>
+                    </div>
+                  </div> <!-- Modal end -->
+                  {% endfor %}
+
+              </div>
+            </div>
+
+        </div>  <!-- col-6 -->
+        <!-- 우측 -->
+        <!-- 친구 관리 -->
+        <div class="p-2">
+            <div class="card right">
+              <div class="card right">
+                <div class="card-body" style="background-color:#FFF1B5">
+                  <div class="card-text font-weight-light"><u>Teller</u><br /><small>나에게 운임을 보여주는 사람</small></div>
+                  <hr />
+                  <div class="card-text font-weight-light"><u>Reader</u><br /><small>내가 운임을 보여주는 사람</small></div>
+                </div>
+              </div>
+            </div>
+            <span>&nbsp;</span>
+              <div class="card right">
+                <div class="card-header">
+                  <span>Tellers</span>
+                </div>
+                <div class="card-body">
+
+                  {% for shower in showers %}
+                  <div class="d-flex justify-content-start align-items-center">
+                    <div class="p">
+                      {% if shower.shower.profile.image %}<img src="{{ shower.shower.profile.image.url }}" class="profile_friend">{% else %}<img src="{% static 'account/profileimages/blank.png' %}" class="profile_friend">{% endif %}
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="p text-left">
+                      <div class="card-text">{{ shower.shower.nickname }}&nbsp;
+                        {% if shower.shower.email in readers_list %}{% else %}<a data-href="/account/friend/add/{{ shower.shower.pk }}" data-toggle="modal" data-target="#confirm-add-tellerxg"><span class="badge badge-warning" id="badgeonmouse">add+</span></a>{% endif %}
+                      </div>
+                      <div class="card-text font-weight-light text-muted"><small>{{ shower.shower.email }}</small></div>
+                    </div>
+                  </div>
+                  <span>&nbsp;</span>
+
+                  <!-- Add Modal -->
+                  <div class="modal fade" id="confirm-add-tellerxg" tabindex="-1" role="dialog" aria-labelledby="addModal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header text-left bg-dark text-light">
+                            RateLink
+                          </div>
+                          <div class="modal-body text-dark">
+                            <span>
+                              정말 추가하시겠습니까?<br />
+                              상대방이 {% if request.user.profile.profile_name %}{{ request.user.profile.profile_name }}{% else %}{{ request.user.nickname }}{% endif %}님이 입력한 운임을 모두 볼 수 있게 됩니다.
+                            </span>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                            <a class="btn btn-primary btn-ok">추가</a>
+                            </div>
+                        </div>
+                    </div>
+                  </div> <!-- Modal end -->
+                  {% endfor %}
+
+                </div>
+              </div>
+              <span>&nbsp;</span>
+              <div class="card right">
+                <div class="card-body" style="background-color:#FFF1B5">
+                  <div class="card-text font-weight-light"><small>친구 삭제는 <span class="badge badge-danger">del</span>를 클릭하세요.</small></div>
+                </div>
+              </div>
+              <span>&nbsp;</span>
+              <div class="card right">
+                <div class="card-header">
+                  <span>Readers</span>
+                </div>
+                <div class="card-body">
+
+                  {% for reader in readers %}
+                  <div class="d-flex justify-content-start align-items-center">
+                    <div class="p">
+                      {% if reader.reader.profile.image %}<img src="{{ reader.reader.profile.image.url }}" class="profile_friend">{% else %}<img src="{% static 'account/profileimages/blank.png' %}" class="profile_friend">{% endif %}
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="p text-left">
+                      <div class="card-text">{{ reader.reader.nickname }}&nbsp;<a data-href="delete/{{reader.pk}}" id="delete-small" data-toggle="modal" data-target="#confirm-deletexg"><span class="badge badge-danger" id="badgeonmouse">del</span></a></div>
+
+                      <!-- Delete Modal -->
+                      <div class="modal fade" id="confirm-deletexg" tabindex="-1" role="dialog" aria-labelledby="deleteModal" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header text-left bg-dark text-light">
+                                RateLink
+                              </div>
+                              <div class="modal-body text-dark">
+                                <span>정말 삭제하시겠습니까?</span>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                                <a class="btn btn-primary btn-ok">삭제</a>
+                                </div>
+                            </div>
+                        </div>
+                      </div> <!-- Modal end -->
+
+                      <div class="card-text font-weight-light text-muted"><small>{{ reader.reader.email }}</small></div>
+                    </div>
+                  </div>
+                  <span>&nbsp;</span>
+                  {% endfor %}
+
+                </div>
+              </div>
+            </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+{% block javascript %}
+<script>
+  $('#confirm-delete').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+  $('#confirm-deletexg').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+  $('#confirm-add').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+  $('#confirm-addxg').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+  $('#confirm-add-teller').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+  $('#confirm-add-tellerxg').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+  });
+</script>
+{% endblock javascript %}
