@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>로그인-RateLink</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% load humanize %}
+
+  {% load static %}
+  <link href="{% static 'rate/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
+  <link href="{% static 'rate/css/select2.min.css' %}" rel="stylesheet" type="text/css">
+
+  <style>
+    body {
+      background-color: #ececec;
+    }
+    div.card {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    #notification {
+      position:fixed;
+      top:5px;
+      right:10px;
+      width:250px;
+      z-index:105;
+      text-align:left;
+      font-weight:normal;
+      font-size:0.8rem;
+      font-weight:bold;
+      color:white;
+      background-color:#000000;
+      padding:10px;
+      border-radius: 5px;
+      opacity: 0.9;
+    }
+    #notification span.dismiss {
+      position: absolute;
+      top:10px;
+      right:10px;
+      padding:0 5px;
+      cursor:pointer;
+      float:right;
+    }
+    #notification a {
+      color:white;
+      text-decoration:none;
+      font-weight:bold
+    }
+  </style>
+  </head>
+  <body>
+
+<div class="container">
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+{% for message in messages %}
+  <div id="notification" style="display:none;">
+    <span>RateLink<span><span class="dismiss"><a>X</a></span><br />
+    <div>
+      {{ message }}
+    </div>
+  </div>
+{% endfor %}
+
+{% if form.errors %}
+  {% for field in form %}
+    {% for error in field.errors %}
+      <div id="notification" style="display:none;">
+        <span>RateLink<span><span class="dismiss"><a>X</a></span><br />
+        <div>
+          {{ error|linebreaks }}
+        </div>
+      </div>
+    {% endfor %}
+  {% endfor %}
+  {% for error in form.non_field_errors %}
+  <div id="notification" style="display:none;">
+    <span>RateLink<span><span class="dismiss"><a>X</a></span><br />
+    <div>
+      {{ error|linebreaks }}
+    </div>
+  </div>
+  {% endfor %}
+{% endif %}
+
+<div class="d-flex justify-content-center">
+  <div class="d-flex flex-row">
+    <div class="flex-column text-center">
+          <p><h3>RateLink</h3></p>
+          <span>&nbsp;</span>
+          <form method="POST">{%csrf_token%}
+            <div class="form-group">
+              <input type="text" name="email" class="form-control" style="width:20rem;" required autofocus id="email" aria-describedby="emailHelp" placeholder="Email">
+            </div>
+            <div class="form-group">
+              <input type="password" name="password" class="form-control" style="width:20rem;" required id="password" placeholder="Password">
+            </div>
+            <div class="row justify-content-center">
+              <div class="p-2">
+                <button class="btn btn-primary btn-block" type="submit">로그인</button>
+              </div>
+              <div class="p-2">
+                <a href="/account/signup/" class="btn btn-secondary btn-block" role="button" aria-pressed="true">회원가입</a>
+              </div>
+            </div>
+            <div>&nbsp;</div>
+            <div class="text-center">
+              <a href="/account/findid/" style="text-decoration:none;">비밀번호를 잊으셨나요?</a>
+            </div>
+          </form>
+        </div>
+      </div>
+  </div>
+</div>
+
+{% load static %}
+<script src="{% static 'rate/js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'rate/js/bootstrap.bundle.min.js' %}"></script>
+<script>
+{% if messages or form.errors %}
+$('#notification').fadeIn('slow');
+{% endif %}
+$('body').on('click', '.dismiss', function() {
+  $('[id^=notification]').fadeOut('slow');
+});
+</script>
+</body>
+</html>

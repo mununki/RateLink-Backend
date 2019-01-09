@@ -1,0 +1,187 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Locaton Code 검색-RateLink{% endblock title %}
+
+{% block css %}
+<style>
+#map {
+  width: 350px;
+  height: 350px;
+  margin-bottom: 10px;
+}
+</style>
+{% endblock css %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">Knowledge Center</li>
+    <li class="breadcrumb-item active" aria-current="page">Location Code 찾기</li>
+  </ol>
+</nav>
+  <div class="container" style="margin-top:50px;">
+
+          <div class="d-flex justify-content-center">
+
+              <div class="p">
+                <div class="card" style="max-width:350px;margin-bottom:10px;">
+
+                    <div class="card-header">
+                      Location Code 찾기
+                    </div>
+                    <div class="card-body">
+                      <form action="" method="GET">
+
+                        <div class="form-group">
+                          <label for="country">국가</label>
+                          <select class="form-control" id="country" name="country" tabindex="1">
+                            {% for country_name in country_names %}
+                              <option value="{{ country_name }}">{{ country_name }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="location">도시</label>
+                          <select class="form-control" id="location" name="location" tabindex="2">
+                            {% for location_name in location_names %}
+                              <option value="{{ location_name }}">{{ location_name }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+
+                        <div>
+                          <img id="loading_img" src="{% static '/countrycity/image/loading.gif' %}" width="25px" height="25px" style="display:none;">&nbsp;<span id="result"></span>
+                        </div>
+                        &nbsp;<br />
+                        <div>
+                          <span id="search_button" class="btn btn-primary" tabindex="3">검색</span> <a class="btn btn-secondary" href="/search/locationcode/" tabindex="4">재선택</a>
+                        </div>
+                      </form>
+
+                    </div>
+                  </div> <!-- card -->
+
+              </div> <!-- p -->
+
+        </div> <!-- d-flex -->
+        <div class="d-flex flex-row justify-content-center">
+            <div id="map" class="p"></div>
+        </div>
+        <div class="d-flex flex-row justify-content-center">
+          <div class="p text-muted">
+            Location Code 검색 결과는 United Nations Code for Trade and Transport Locations (UN/LOCODE)을 기반으로 제공됩니다.<br />
+            (출처 : <a href="http://www.unece.org/cefact/locode/service/location" target="new">http://www.unece.org/cefact/locode/service/location</a>)
+          </div>
+        </div> <!-- d-flex -->
+</div> <!-- container -->
+
+{% endblock content %}
+
+{% block javascript %}
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDfYaU5ZJxV0HdWP7jvkCkR94lq3UhfE24"></script>
+  <script>
+  function initMap(x, y) {
+    var map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: x, lng: y},
+      zoom: 8
+    });
+    var marker = new google.maps.Marker({
+      position: {lat: x, lng: y},
+      map: map
+    });
+  }
+  </script>
+  <script>
+  // span 버튼 키보드 엔터로 클릭 인식
+  $('#search_button').keydown(function(event){
+    if(event.keyCode==13){
+       $('#search_button').trigger('click');
+    }
+  });
+    $('#country').change(function() {
+      var country_name = $(this).val();
+
+      $('#loading_img').show();
+      $('#result').text('로딩중...');
+      $('#location').attr('style', 'pointer-events: none;background-color:lightgrey;');
+
+      $.ajax({
+        url: '/search/locationcode/',
+        data: {
+          'country': country_name
+        },
+        success: function (data){
+          $('#loading_img').hide();
+          $('#result').text('찾을 도시를 선택해주세요.');
+          $('#location').attr('style', '');
+          $('#location').html(data);
+        },
+        error: function(){
+          $('#loading_img').hide();
+          $('#result').text('도시를 찾을 수 없습니다. 다시 시도해주세요.');
+          $('#location').attr('style', '');
+        }
+      });
+
+    });
+    $('#search_button').click(function(){
+      var country_name = $('#country').val();
+      var location_name = $('#location').val();
+
+      if (location_name) {
+        $('#loading_img').show();
+        $('#result').text('찾는중...');
+        $('#country').attr('style', 'pointer-events: none;background-color:lightgrey;');
+        $('#location').attr('style', 'pointer-events: none;background-color:lightgrey;');
+
+        $.ajax({
+          url: '/search/locationcode/',
+          data: {
+            'country': country_name,
+            'location': location_name
+          },
+          success: function (data){
+            $('#loading_img').hide();
+            $('#result').text('찾은 결과: ' + data.code + '  (좌표: ' + data.lat + ', ' + data.lng + ')');
+            initMap(data.lat, data.lng);
+            $('#country').attr('style', '');
+            $('#location').attr('style', '');
+          },
+          error: function(){
+            $('#loading_img').hide();
+            $('#result').text('결과를 찾을 수 없습니다. 다시 시도해주세요.');
+            $('#country').attr('style', '');
+            $('#location').attr('style', '');
+          }
+        });
+      }
+      else {
+        $('#loading_img').show();
+        $('#result').text('로딩중...');
+        $('#location').attr('style', 'pointer-events: none;background-color:lightgrey;');
+
+        $.ajax({
+          url: '/search/locationcode/',
+          data: {
+            'country': country_name
+          },
+          success: function (data){
+            $('#loading_img').hide();
+            $('#result').text('찾을 도시를 선택해주세요.');
+            $('#location').attr('style', '');
+            $('#location').html(data);
+          },
+          error: function(){
+            $('#loading_img').hide();
+            $('#result').text('도시를 찾을 수 없습니다. 다시 시도해주세요.');
+            $('#location').attr('style', '');
+          }
+        });
+      }
+
+    });
+  </script>
+
+{% endblock javascript %}
